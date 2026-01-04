@@ -1,0 +1,33 @@
+# Python
+server.py
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node.js (si decides usarlo en el futuro)
+node_modules/
+package.json
+package-lock.json
+
+# Sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Artifacts
+.gemini/

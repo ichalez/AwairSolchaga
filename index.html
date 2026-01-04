@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Monitor your Awair air quality data in real-time with beautiful visualizations">
+    <title>Awair Dashboard - Air Quality Monitor</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <!-- Main App Container -->
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">🌬️</div>
+                    <h1>Awair Dashboard</h1>
+                    <span class="device-info">Local API - 192.168.68.103</span>
+                </div>
+                <div class="header-controls">
+                    <button id="refreshBtn" class="btn-icon" title="Actualizar datos">
+                        <span class="refresh-icon">↻</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+                <p>Cargando datos de tu Awair...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="error-state" style="display: none;">
+                <div class="error-icon">⚠️</div>
+                <h3>Error al cargar datos</h3>
+                <p id="errorMessage"></p>
+                <button id="retryBtn" class="btn-primary">Reintentar</button>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" style="display: none;">
+                <!-- Awair Score Section -->
+                <section class="score-section">
+                    <div class="score-card">
+                        <h2>Awair Score</h2>
+                        <div class="score-gauge">
+                            <svg viewBox="0 0 200 120" class="gauge-svg">
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path id="gaugeBg" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#2a2a3e"
+                                    stroke-width="20" stroke-linecap="round" />
+                                <path id="gaugeProgress" d="M 20 100 A 80 80 0 0 1 180 100" fill="none"
+                                    stroke="url(#scoreGradient)" stroke-width="20" stroke-linecap="round"
+                                    stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                            </svg>
+                            <div class="score-value">
+                                <span id="scoreNumber">--</span>
+                                <span class="score-label" id="scoreLabel">Calculando...</span>
+                            </div>
+                        </div>
+                        <p class="last-update">Última actualización: <span id="lastUpdate">--</span></p>
+                    </div>
+                </section>
+
+                <!-- Metrics Grid -->
+                <section class="metrics-section">
+                    <h2 class="section-title">Métricas en Tiempo Real</h2>
+                    <div class="metrics-grid">
+                        <!-- Temperature Card -->
+                        <div class="metric-card temp-card">
+                            <div class="metric-icon">🌡️</div>
+                            <div class="metric-info">
+                                <h3>Temperatura</h3>
+                                <div class="metric-value">
+                                    <span id="tempValue">--</span>
+                                    <span class="metric-unit">°C</span>
+                                </div>
+                                <div class="metric-status" id="tempStatus">--</div>
+                            </div>
+                        </div>
+
+                        <!-- Humidity Card -->
+                        <div class="metric-card humid-card">
+                            <div class="metric-icon">💧</div>
+                            <div class="metric-info">
+                                <h3>Humedad</h3>
+                                <div class="metric-value">
+                                    <span id="humidValue">--</span>
+                                    <span class="metric-unit">%</span>
+                                </div>
+                                <div class="metric-status" id="humidStatus">--</div>
+                            </div>
+                        </div>
+
+                        <!-- CO2 Card -->
+                        <div class="metric-card co2-card">
+                            <div class="metric-icon">🫁</div>
+                            <div class="metric-info">
+                                <h3>CO₂</h3>
+                                <div class="metric-value">
+                                    <span id="co2Value">--</span>
+                                    <span class="metric-unit">ppm</span>
+                                </div>
+                                <div class="metric-status" id="co2Status">--</div>
+                            </div>
+                        </div>
+
+                        <!-- VOC Card -->
+                        <div class="metric-card voc-card">
+                            <div class="metric-icon">🧪</div>
+                            <div class="metric-info">
+                                <h3>VOCs</h3>
+                                <div class="metric-value">
+                                    <span id="vocValue">--</span>
+                                    <span class="metric-unit">ppb</span>
+                                </div>
+                                <div class="metric-status" id="vocStatus">--</div>
+                            </div>
+                        </div>
+
+                        <!-- PM2.5 Card -->
+                        <div class="metric-card pm25-card">
+                            <div class="metric-icon">💨</div>
+                            <div class="metric-info">
+                                <h3>PM2.5</h3>
+                                <div class="metric-value">
+                                    <span id="pm25Value">--</span>
+                                    <span class="metric-unit">µg/m³</span>
+                                </div>
+                                <div class="metric-status" id="pm25Status">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Historical Charts -->
+                <section class="charts-section">
+                    <h2 class="section-title">Histórico (Últimas 24 Horas)</h2>
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3>Temperatura & Humedad</h3>
+                            <canvas id="tempHumidChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Calidad del Aire</h3>
+                            <canvas id="airQualityChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
