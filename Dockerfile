@@ -6,7 +6,7 @@ COPY style.css /usr/share/nginx/html/
 COPY app.js /usr/share/nginx/html/
 
 # Exponer puerto 80
-EXPOSE 80
+EXPOSE 3000
 
 # Iniciar Nginx
 CMD ["nginx", "-g", "daemon off;"]
