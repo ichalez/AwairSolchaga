@@ -52,8 +52,10 @@ let charts = {
 };
 
 // Configuration
-const DEVICE_IP = '192.168.68.103'; // Awair device IP
+let DEVICE_IP = '192.168.68.103'; // Default/Fallback IP
 const REFRESH_INTERVAL = 10000; // 10 seconds (Local API updates every 10s)
+const DISCOVERY_RANGE = { start: 100, end: 199 };
+const DISCOVERY_TIMEOUT = 2000; // 2 seconds per request
 
 // DOM Elements
 const elements = {
@@ -426,16 +428,89 @@ elements.retryBtn.addEventListener('click', () => {
     loadData();
 });
 
+// Discovery Logic
+async function discoverDevice() {
+    console.log('Iniciando búsqueda de dispositivo Awair...');
+
+    // Try last known IP first
+    const lastKnownIP = localStorage.getItem('awair_last_ip');
+    if (lastKnownIP) {
+        console.log(`Probando última IP conocida: ${lastKnownIP}`);
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), DISCOVERY_TIMEOUT);
+            const response = await fetch(`http://${lastKnownIP}/air-data/latest`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (response.ok) {
+                console.log(`Dispositivo encontrado en última IP: ${lastKnownIP}`);
+                return lastKnownIP;
+            }
+        } catch (e) {
+            console.warn(`Última IP conocida ${lastKnownIP} no responde.`);
+        }
+    }
+
+    // Scan the range 192.168.68.100 - 192.168.68.199
+    const baseIP = '192.168.68.';
+    const promises = [];
+
+    for (let i = DISCOVERY_RANGE.start; i <= DISCOVERY_RANGE.end; i++) {
+        const ip = `${baseIP}${i}`;
+        const promise = (async () => {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), DISCOVERY_TIMEOUT);
+                const response = await fetch(`http://${ip}/air-data/latest`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (response.ok) {
+                    return ip;
+                }
+            } catch (e) {
+                return null;
+            }
+        })();
+        promises.push(promise);
+    }
+
+    // Wait for the first successful discovery
+    const results = await Promise.all(promises);
+    const foundIP = results.find(ip => ip !== null);
+
+    if (foundIP) {
+        console.log(`Dispositivo encontrado en: ${foundIP}`);
+        localStorage.setItem('awair_last_ip', foundIP);
+        return foundIP;
+    }
+
+    throw new Error(`No se encontró ningún dispositivo Awair en el rango ${baseIP}${DISCOVERY_RANGE.start}-${DISCOVERY_RANGE.end}`);
+}
+
 // Initialize App
-function init() {
-    // Initialize Local API with device IP
-    api = new AwairAPI(DEVICE_IP);
+async function init() {
+    try {
+        showLoading();
+        const loadingText = elements.loadingState.querySelector('p');
+        if (loadingText) loadingText.textContent = 'Buscando tu dispositivo Awair en la red local...';
 
-    // Start loading data
-    loadData();
+        // 1. Discover Device
+        const foundIP = await discoverDevice();
+        DEVICE_IP = foundIP;
 
-    // Auto-refresh every 10 seconds
-    refreshInterval = setInterval(loadData, REFRESH_INTERVAL);
+        // Update UI with found IP
+        const deviceInfo = document.querySelector('.device-info');
+        if (deviceInfo) deviceInfo.textContent = `Local API - ${foundIP}`;
+
+        // 2. Initialize Local API with discovered IP
+        api = new AwairAPI(DEVICE_IP);
+
+        // 3. Start loading data
+        await loadData();
+
+        // 4. Auto-refresh every 10 seconds
+        refreshInterval = setInterval(loadData, REFRESH_INTERVAL);
+    } catch (error) {
+        showError(error.message);
+    }
 }
 
 // Start the app

@@ -1,0 +1,535 @@
+:root {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --accent-color: #2c5f8d;
+    --accent-hover: #1e4a6f;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Background Blobs */
+.background-blobs {
+    display: none;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 20s infinite ease-in-out;
+}
+
+.blob-1 {
+    width: 400px;
+    height: 400px;
+    background: #4f46e5;
+    top: -100px;
+    left: -100px;
+}
+
+.blob-2 {
+    width: 500px;
+    height: 500px;
+    background: #0ea5e9;
+    bottom: -150px;
+    right: -100px;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: #c026d3;
+    top: 40%;
+    left: 40%;
+    animation-delay: -10s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    33% {
+        transform: translate(30px, -50px);
+    }
+
+    66% {
+        transform: translate(-20px, 20px);
+    }
+}
+
+/* Layout */
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+    /* Changed from height to min-height */
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.app-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.app-header p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.section-divider {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 2px solid var(--border-color);
+}
+
+.content-grid {
+    display: grid;
+    gap: 2rem;
+    /* Removed flex: 1 to stop forcing full height */
+    align-items: stretch;
+    /* Stretch to make both columns equal height */
+    /* Align items to start so map doesn't stretch unnecessarily if we want fixed height, OR stretch if we want match. User said "encaje". Let's try stretch (default) but with min-height. */
+}
+
+/* Glass Panel */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Left Panel */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+}
+
+/* Drop Zone */
+.drop-zone {
+    border: 2px dashed var(--glass-border);
+    cursor: pointer;
+    position: relative;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+    border-color: var(--accent-color);
+    background: rgba(44, 95, 141, 0.05);
+}
+
+.drop-content {
+    text-align: center;
+    transition: opacity 0.2s;
+}
+
+.upload-icon {
+    width: 48px;
+    height: 48px;
+    stroke: var(--accent-color);
+    margin-bottom: 16px;
+}
+
+.drop-content p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.sub-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.preview-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* File Info */
+.file-info {
+    text-align: center;
+    padding: 20px;
+}
+
+.file-info .file-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--accent-color);
+    word-break: break-all;
+}
+
+.file-info .file-size {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Info Panel */
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.value {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+/* Report Panel */
+.report-panel {
+    text-align: center;
+}
+
+.report-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.report-icon {
+    font-size: 1.5rem;
+}
+
+.report-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.report-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+/* Buttons */
+.primary-btn {
+    width: 100%;
+    padding: 12px 24px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* AI Panel */
+.ai-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.ai-content {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    min-height: 100px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Right Panel (Map) */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Map Container */
+.map-container {
+    position: relative;
+    height: 100%;
+    min-height: 500px;
+    overflow: hidden;
+}
+
+#map,
+#srt-map {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    z-index: 1;
+    border-radius: 8px;
+}
+
+.map-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 0;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 500px;
+    }
+}
+
+/* Print Styles */
+@media print {
+
+    /* Hide non-essential elements */
+    .app-header p,
+    .drop-content,
+    .file-info,
+    .report-header,
+    .report-content,
+    #download-btn,
+    #srt-download-btn,
+    .background-blobs,
+    .map-placeholder,
+    #srt-map-placeholder {
+        display: none !important;
+    }
+
+    /* Reset layout for print */
+    body,
+    .app-container {
+        background: #fff !important;
+        color: #000 !important;
+        height: auto !important;
+        display: block !important;
+        padding: 10px !important;
+        margin: 0 !important;
+    }
+
+    .app-header h1 {
+        color: #000 !important;
+        background: none !important;
+        -webkit-text-fill-color: black !important;
+        font-size: 16pt !important;
+        text-align: left !important;
+        margin-bottom: 10px !important;
+        border-bottom: 2px solid #000;
+        padding-bottom: 5px;
+    }
+
+    .content-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 15px !important;
+    }
+
+    /* Left Panel (Info) */
+    .left-panel {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+        overflow: visible !important;
+    }
+
+    .glass-panel {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        backdrop-filter: none !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Drop zone - show it but clean */
+    .drop-zone {
+        border: 1px solid #ccc !important;
+        background: none !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        margin-bottom: 10px !important;
+    }
+
+    .preview-image {
+        position: static !important;
+        max-height: 250px !important;
+        width: auto !important;
+        max-width: 100% !important;
+        border-radius: 4px !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+
+    .info-panel {
+        border: 1px solid #ccc !important;
+        padding: 8px !important;
+        border-radius: 4px !important;
+        margin-bottom: 0 !important;
+        font-size: 10pt !important;
+    }
+
+    .info-item {
+        border-bottom-color: #eee !important;
+        margin-bottom: 4px !important;
+        padding-bottom: 4px !important;
+    }
+
+    .label {
+        color: #666 !important;
+        font-size: 9pt !important;
+    }
+
+    .value {
+        font-size: 10pt !important;
+    }
+
+    /* Map */
+    .right-panel {
+        width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid !important;
+    }
+
+    .map-container {
+        height: 520px !important;
+        border: 1px solid #000 !important;
+    }
+
+    #map {
+        height: 520px !important;
+    }
+
+    /* Force background graphics (for map tiles) */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Hide report panel in print */
+    .report-panel {
+        display: none !important;
+    }
+}
+
+/* Section Divider */
+.section-divider {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* File Info Display */
+.file-info {
+    text-align: center;
+    padding: 20px;
+}
+
+.file-info .file-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--accent-color);
+}
+
+.file-info .file-size {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* SRT Map specific styles */
+#srt-map {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    z-index: 1;
+}
