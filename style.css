@@ -183,6 +183,22 @@ body {
     transform: translateY(-2px);
 }
 
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 0.25rem;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-small:hover {
+    filter: brightness(1.2);
+}
+
 /* App Container */
 .app-container {
     min-height: 100vh;
@@ -268,6 +284,46 @@ body {
 
 .btn-icon:hover .refresh-icon {
     transform: rotate(180deg);
+}
+
+.ip-input-group {
+    display: flex;
+    align-items: center;
+    background: var(--bg-dark);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-sm);
+    padding: 2px 4px;
+    gap: 4px;
+}
+
+.ip-prefix {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding-left: 4px;
+    font-family: monospace;
+}
+
+#ipSuffix {
+    width: 45px;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 2px;
+    text-align: center;
+    font-family: monospace;
+}
+
+#ipSuffix:focus {
+    outline: none;
+    color: #6366f1;
+}
+
+#ipSuffix::-webkit-inner-spin-button,
+#ipSuffix::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Main Content */

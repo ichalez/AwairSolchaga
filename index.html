@@ -25,6 +25,11 @@
                     <span class="device-info">Local API - 192.168.68.103</span>
                 </div>
                 <div class="header-controls">
+                    <div class="ip-input-group">
+                        <span class="ip-prefix">192.168.68.</span>
+                        <input type="number" id="ipSuffix" placeholder="103" min="1" max="255" title="Sufijo de IP">
+                        <button id="setIpBtn" class="btn-small" title="Establecer IP">Set</button>
+                    </div>
                     <button id="refreshBtn" class="btn-icon" title="Actualizar datos">
                         <span class="refresh-icon">↻</span>
                     </button>

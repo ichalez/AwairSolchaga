@@ -77,8 +77,12 @@ const elements = {
     co2Status: document.getElementById('co2Status'),
     vocValue: document.getElementById('vocValue'),
     vocStatus: document.getElementById('vocStatus'),
+    vocValue: document.getElementById('vocValue'),
+    vocStatus: document.getElementById('vocStatus'),
     pm25Value: document.getElementById('pm25Value'),
-    pm25Status: document.getElementById('pm25Status')
+    pm25Status: document.getElementById('pm25Status'),
+    ipSuffix: document.getElementById('ipSuffix'),
+    setIpBtn: document.getElementById('setIpBtn')
 };
 
 // Utility Functions
@@ -428,6 +432,28 @@ elements.retryBtn.addEventListener('click', () => {
     loadData();
 });
 
+elements.setIpBtn.addEventListener('click', () => {
+    const suffix = elements.ipSuffix.value.trim();
+    if (suffix && !isNaN(suffix) && suffix >= 1 && suffix <= 255) {
+        const newIP = `192.168.68.${suffix}`;
+        console.log(`Manual override: ${newIP}`);
+        DEVICE_IP = newIP;
+        localStorage.setItem('awair_last_ip', newIP);
+
+        // Re-initialize and load
+        if (refreshInterval) clearInterval(refreshInterval);
+        api = new AwairAPI(DEVICE_IP);
+        loadData();
+        refreshInterval = setInterval(loadData, REFRESH_INTERVAL);
+
+        // Update UI
+        const deviceInfo = document.querySelector('.device-info');
+        if (deviceInfo) deviceInfo.textContent = `Local API - ${newIP}`;
+    } else {
+        alert('Por favor, introduce un número válido entre 1 y 255.');
+    }
+});
+
 // Discovery Logic
 async function discoverDevice() {
     console.log('Iniciando búsqueda de dispositivo Awair...');
@@ -499,6 +525,11 @@ async function init() {
         // Update UI with found IP
         const deviceInfo = document.querySelector('.device-info');
         if (deviceInfo) deviceInfo.textContent = `Local API - ${foundIP}`;
+
+        // Prefill manual input suffix
+        if (elements.ipSuffix && foundIP.startsWith('192.168.68.')) {
+            elements.ipSuffix.value = foundIP.split('.').pop();
+        }
 
         // 2. Initialize Local API with discovered IP
         api = new AwairAPI(DEVICE_IP);
